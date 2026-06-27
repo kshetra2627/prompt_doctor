@@ -1,157 +1,169 @@
-# PromptDoctor
+# 🩹 PromptDoctor
 
-PromptDoctor is a **Streamlit prompt engineering lab** built to help learners practice prompt engineering through **progressive, exam-style challenges** rather than just reading prompt-writing guides.
+**PromptDoctor** is a **Streamlit-based Prompt Engineering Lab** designed to help learners practice prompt engineering through **progressive, exam-style challenges** instead of just reading prompt-writing guides.
 
-Users write prompts, test them on realistic scenarios, and receive **structured AI feedback** (per-principle) before advancing.
-
----
-
-## Tech stack
-
-- **Python 3**
-- **Streamlit** (UI)
-- **OpenRouter** for LLM inference (runner + judge)
-- **requests** (HTTP calls to OpenRouter)
-- **python-dotenv** (`.env` support)
+Users write prompts, test them on realistic scenarios, and receive **AI-generated structured feedback** before advancing to the next level.
 
 ---
 
-## What it does
+# 🚀 Tech Stack
 
-PromptDoctor runs your prompt against a level’s **sample input** using the “student model”, then grades it with an **AI examiner** using level-based principles.
-
----
-
-## Features
-
-- Select a **domain** (Healthcare, Legal, Finance, Technology, Marketing, Education, Environmental, HR, Customer Support)
-- Complete **5 challenges** per domain
-- For each challenge, progress through **5 levels** (Basic → Robust)
-- Your prompt is run against the level’s **sample input**
-- An AI **examiner** grades your prompt and returns structured feedback as JSON
-- You can only advance when you **pass all principles** for the current level
+* 🐍 Python 3
+* 🎨 Streamlit (UI)
+* 🤖 OpenRouter (LLM Inference)
+* 🌐 Requests (HTTP API Calls)
+* 🔐 python-dotenv (.env support)
 
 ---
 
-## How the app works (runtime flow)
+# ✨ Features
 
-### 1) UI + state (`app.py`)
-- Users choose a domain from a dropdown.
-- For a selected domain, the app loads the current challenge + level from `levels.py`.
-- The prompt editor is shown with:
-  - Level description + task
-  - Sample input and expected output hints (via expanders)
-  - “What the Examiner Checks” principles
-- On submit:
-  1. `run_prompt()` is called to execute the student prompt on the sample input.
-  2. If no error, `grade_prompt()` is called to grade the student prompt.
-  3. The verdict is rendered in the “Examiner Verdict” panel.
-  4. If verdict is `pass`, the level is marked cleared and you can go to the next level/challenge.
+* 📚 Practice across **9 domains**
 
-Key note: progress is tracked in **`st.session_state`** (in-memory for the running server session).
+  * Healthcare
+  * Legal
+  * Finance
+  * Technology
+  * Marketing
+  * Education
+  * Environmental
+  * HR
+  * Customer Support
+* 🎯 Complete **5 challenges** per domain
+* 📈 Progress through **5 prompt engineering levels**
 
-### 2) Run the student prompt (`runner.py`)
-- Uses OpenRouter with:
-  - `STUDENT_MODEL = "openai/gpt-4o-mini"`
-- Supports a `{input}` placeholder in the student prompt:
-  - If `{input}` exists, it replaces it with the level’s sample input.
-  - Otherwise, the student prompt is used as the **system** message and the sample input is sent as the **user** message.
-- Returns the model’s text output.
-
-### 3) Grade the prompt (`examiner.py`)
-- Uses OpenRouter with:
-  - `JUDGE_MODEL = "openai/gpt-4o-mini"` (pinned for consistent grading)
-- Builds a large system prompt containing:
-  - Domain name + level name
-  - The **principles** for that level (from `levels.py`)
-  - The sample input, expected output, example output
-  - The student prompt and the student model output
-- The judge is instructed to:
-  - Reason internally in `<reasoning>...</reasoning>`
-  - Output **ONLY raw JSON** matching an expected schema
-- `examiner.py` attempts multiple strategies to extract JSON from the judge response.
-- Enforcement rule: verdict is **`pass` only if all principles have `pass: true`**.
+  * Basic
+  * Structured
+  * Few-shot
+  * Reasoning
+  * Robust
+* 🤖 Execute prompts using an AI student model
+* 🩺 Receive detailed feedback from an AI examiner
+* ✅ Advance only after passing every grading principle
 
 ---
 
-## Project structure
+# ⚙️ How It Works
 
-- `app.py`
-  - Streamlit UI, styling, and orchestration
-  - Manages session state and renders verdict + progress
+### 1️⃣ Write a Prompt
 
-- `runner.py`
-  - Calls OpenRouter to run the student prompt against the level sample input
+Choose a domain and complete the current challenge by writing your own prompt.
 
-- `examiner.py`
-  - Calls OpenRouter to grade the student prompt against level principles
-  - Extracts and validates JSON verdicts
+### 2️⃣ Run the Prompt
 
-- `levels.py`
-  - All domain/challenge/level definitions
-  - `DOMAINS`: domain descriptions
-  - `LEVEL_TEMPLATES`: common level principles + wording
-  - `CHALLENGES`: per-domain 5 challenges, each with per-level sample input, expected output, and sometimes example output
+Your prompt is executed using the **Student Model** against a predefined sample input.
 
-- `bg.png`
-  - Background image used in the UI
+### 3️⃣ AI Evaluation
+
+The **AI Examiner** evaluates your prompt based on the principles of the current level.
+
+### 4️⃣ Receive Feedback
+
+A structured JSON verdict is generated with:
+
+* ✅ Passed principles
+* ❌ Failed principles
+* 💡 Suggestions for improvement
+
+### 5️⃣ Progress
+
+Successfully passing all principles unlocks the next level or challenge.
 
 ---
 
-## Configuration
+# 📂 Project Structure
 
-The app requires an OpenRouter API key.
+```text
+PromptDoctor/
+│── app.py              # Streamlit UI
+│── runner.py           # Executes student prompts
+│── examiner.py         # AI grading system
+│── levels.py           # Domains, challenges and levels
+│── bg.png              # Background image
+│── README.md
+```
 
-1. Create a `.env` file in the project root.
-2. Set:
+---
+
+# 🏗️ Runtime Flow
+
+```text
+User Prompt
+      │
+      ▼
+ Student Model
+      │
+      ▼
+ Generated Output
+      │
+      ▼
+ AI Examiner
+      │
+      ▼
+ JSON Verdict
+      │
+      ▼
+ Progress Update
+```
+
+---
+
+# 🎓 Prompt Engineering Levels
+
+| Level         | Focus                     |
+| ------------- | ------------------------- |
+| 🟢 Basic      | Clear role & instructions |
+| 🔵 Structured | Output formatting & JSON  |
+| 🟡 Few-shot   | Examples & consistency    |
+| 🟠 Reasoning  | Multi-step reasoning      |
+| 🔴 Robust     | Defensive prompting       |
+
+---
+
+# 🔑 Configuration
+
+Create a `.env` file in the project root.
 
 ```env
 OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
-Both `runner.py` and `examiner.py` read `OPENROUTER_API_KEY` via `dotenv`.
+Both **runner.py** and **examiner.py** automatically load the API key using **python-dotenv**.
 
 ---
 
-## Levels (what changes as you progress)
-
-Each level corresponds to a prompt-writing technique and a set of principles the examiner checks:
-
-1. **Basic**: Clear role + complete instruction + on-task conciseness
-2. **Structured**: Explicit output format + valid JSON + field completeness
-3. **Few-shot**: Relevant worked examples + coverage of tricky cases + consistency
-4. **Reasoning**: Step-by-step reasoning + correct multi-step handling
-5. **Robust**: Defensive handling (injection guard, noise tolerance, scope control)
-
----
-
-## How to run
-
-From the project directory:
+# ▶️ Running the Project
 
 ```bash
 streamlit run app.py
 ```
 
-Then open the shown local URL in your browser.
+Then open the local URL displayed in your terminal.
 
 ---
 
-## Development notes / troubleshooting
+# 🛠️ Troubleshooting
 
-- If grading returns an `error` verdict, check:
-  - Your `.env` `OPENROUTER_API_KEY`
-  - Whether the judge response contained valid JSON
-- If the run step returns an `ERROR: OPENROUTER_API_KEY not set...`, your key is missing.
+If the application does not work:
+
+* ✔️ Verify your OpenRouter API key.
+* ✔️ Ensure `.env` is correctly configured.
+* ✔️ Check your internet connection.
+* ✔️ If grading fails, verify that the judge model returned valid JSON.
 
 ---
 
-## Extending the lab
+# 📈 Future Improvements
 
-To add a new domain or challenge:
-- Edit `levels.py`:
-  - Add to `DOMAINS`
-  - Add a 5-item list under `CHALLENGES["Your Domain"]`
-  - Provide per-level `sample_input`, `output_expectation`, and optional `example_output`
-- No changes should be required in `app.py` unless you want UI adjustments.
+* 💾 Save user progress permanently
+* 🏆 Leaderboards
+* 📊 Progress analytics
+* 🌍 More domains and challenges
+* 🎨 Improved UI/UX
+* 👤 User authentication
 
+---
+
+# 📄 License
+
+This project was developed as a **Mini Project** for learning and practicing **Prompt Engineering** using Large Language Models.
